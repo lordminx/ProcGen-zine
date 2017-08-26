@@ -28,4 +28,6 @@ The former would allow more control to the generators authors to style their ent
 
 (I could also see a hybrid method, where generators produce some standard object which comes with flags describing how the output should be used, allowing the authors to decide whether to fiddle with their own style or not. Some standardisation between generators would be necessary anyway.)
 
+## Project Status
 
+So far, this is in the super-early stages. Besides this document, I have some vague scripts and templates which I intend to clean up and push to the repo soonish.
