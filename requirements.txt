@@ -1,1 +1,2 @@
-WeasyPrint==0.40
+WeasyPrint
+Jinja2

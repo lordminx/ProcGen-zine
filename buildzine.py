@@ -1,27 +1,34 @@
 from tempfile import TemporaryDirectory
+from weasyprint import HTML
 
 
 class ProcGenZine:
     def __init__(self, seed=None):
 
         self.seed = seed
+        self.template = self.get_template("zine.html")
+
+
+    def get_template(self, template):
+        from jinja2 import Environment, FileSystemLoader, select_autoescape
+        env = Environment(
+            loader=FileSystemLoader('templates'),
+            autoescape=select_autoescape(['html', 'xml'])
+            )
+        return env.get_template(template)
 
     def create_zine(self):
         from generators import all_generators
-        html = ""
 
         with TemporaryDirectory() as target:
 
-            for gen in all_generators:
-                try:
-                    gen = gen(target, self.seed)
-                    chapter = gen.generate()
-                    html += chapter
-                except Exception as e:
-                    print("ERROR: Could not generate chapter from", gen)
-                    raise e
+            all_instances = [generator(target, self.seed) for generator in all_generators]
 
-        return html
+            source = self.template.render(cover="Testcover", generators=all_instances)
+
+            HTML(string=source).write_pdf("zine.pdf")
+
+        return "Done building file: zine.pdf"
 
 
 """
