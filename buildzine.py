@@ -2,6 +2,7 @@ from tempfile import TemporaryDirectory
 from weasyprint import HTML
 from uuid import uuid4
 
+
 class ProcGenZine:
     def __init__(self, seed=None):
 
@@ -9,12 +10,10 @@ class ProcGenZine:
             self.seed = str(uuid4())
         self.template = self.get_template("zine.html")
 
-
     def get_template(self, template):
         from jinja2 import Environment, FileSystemLoader, select_autoescape
         env = Environment(
-            loader=FileSystemLoader('templates'),
-            autoescape=select_autoescape(['html', 'xml'])
+            loader=FileSystemLoader('templates')
             )
         return env.get_template(template)
 
@@ -28,7 +27,7 @@ class ProcGenZine:
             all_instances = [generator(target, self.seed) for generator in all_generators]
 
             source = self.template.render(cover="Testcover", generators=all_instances)
-
+            print(source)
             HTML(string=source).write_pdf(filename)
 
         return "Done building file: " + filename
