@@ -31,7 +31,34 @@ The former would allow more control to the generators authors to style their ent
 
 ## API
 
-The core of the API (as it stands now, anyway) is the `ProcGenZine` class in [buildzine.py](buildzine.py). (Which will almost certainly be renamed at some point.)
+The core of the API (as it stands now, anyway) is the `ProcGenZine` class in [buildzine.py](buildzine.py). (Which will almost certainly be renamed at some point.) It does most of the heavy listing regarding html source generation and also generate the pdf.
+
+### The Basic Workflow:
+
+1. Instantiate `ProcGenZine`:
+    
+    ```python
+    from buildzine import ProcGenZine
+
+    zinebuilder = ProcGenZine()
+
+    # ProcGenZine can also take a seed value for use in the generation process
+    deterministic_zine = ProcGenZine(seed="I can haz zine plz?")
+    ```
+    If no seed value is given, a random value will be generated with `uuid.uuid4` and used as seed.
+
+2. Generate Zine:
+    
+    ```python
+    zinebuilder.create_zine()   // Creates a pdf file called <seed value>.pdf
+
+    # Optionally, a filename can be given.
+
+    zinebuilder.create_zine("newzine.pdf")
+    ```
+    Under the hood, `ProcGenZine.generate_zine()` calls `from generators import all_generators`, which imports a list of generator classes. These classes are then instantiated with a `target` (A temporary directory where generated iimages, sourcefiles, etc. can be saved.) and the seed value.
+    Then, the list of objects is handed over to [a Jinja2 template](templates/zine.html) which calls each generator objects `generate` method and renders that functions output into the html source.
+    At last, this source is then used with `weasyprint.HTML` to render and save a pdf file.
 
 
 

@@ -1,11 +1,12 @@
 from tempfile import TemporaryDirectory
 from weasyprint import HTML
-
+from uuid import uuid4
 
 class ProcGenZine:
     def __init__(self, seed=None):
 
-        self.seed = seed
+        if not seed:
+            self.seed = str(uuid4())
         self.template = self.get_template("zine.html")
 
 
@@ -17,18 +18,20 @@ class ProcGenZine:
             )
         return env.get_template(template)
 
-    def create_zine(self):
+    def create_zine(self, filename=None):
         from generators import all_generators
 
-        with TemporaryDirectory() as target:
+        if not filename:
+            filename = self.seed + ".pdf"
 
+        with TemporaryDirectory() as target:
             all_instances = [generator(target, self.seed) for generator in all_generators]
 
             source = self.template.render(cover="Testcover", generators=all_instances)
 
-            HTML(string=source).write_pdf("zine.pdf")
+            HTML(string=source).write_pdf(filename)
 
-        return "Done building file: zine.pdf"
+        return "Done building file: " + filename
 
 
 """
