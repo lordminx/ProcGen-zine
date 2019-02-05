@@ -22,6 +22,8 @@
 .idea/gradle.xml
 .idea/libraries
 
+.idea/
+
 # Mongo Explorer plugin:
 .idea/mongoSettings.xml
 
@@ -118,6 +120,7 @@ target/
 
 # pyenv
 .python-version
+bin/
 
 # celery beat schedule file
 celerybeat-schedule

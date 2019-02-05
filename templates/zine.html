@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<style>
+    
+    @page {
+        size: A5
+    }
+
+    .cover img {
+        display: auto;
+        max-width: 100%
+    }
+
+    body {
+        font-family: serif !important
+    }
+
+    .chapter {
+        page-break-before: always
+    }
+
+    .cover {
+        page-break-after: always
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+    }
+
+</style>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+</head>
+<body>
+    <div class="cover">
+    {{ cover }}
+    </div> 
+    
+    {% for g in generators %}
+    <div class="chapter">
+        {{ g.generate() }}
+    </div>
+    {% endfor %}
+    <p style="page-break-after: always">
+
+    {{ backcover }}
+
+</body>
+</html>

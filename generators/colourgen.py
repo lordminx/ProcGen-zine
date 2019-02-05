@@ -1,6 +1,5 @@
 from .default import DefaultGenerator
 
-
 class ColourGen(DefaultGenerator):
 
     def generate(self):

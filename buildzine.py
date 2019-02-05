@@ -1,58 +1,52 @@
 from tempfile import TemporaryDirectory
-from weasyprint import HTML
 from uuid import uuid4
+from glob import glob
+from os.path import join
+
+from weasyprint import HTML
+from generators.default import CoverGenerator
+from jinja2 import Environment, FileSystemLoader
 
 
 class ProcGenZine:
     def __init__(self, seed=None):
 
-        if not seed:
+        if not seed: # generate a random UUID as seed
             self.seed = str(uuid4())
         self.template = self.get_template("zine.html")
 
     def get_template(self, template):
-        from jinja2 import Environment, FileSystemLoader, select_autoescape
+        """Get Jinja template from templates folder."""
+
+
         env = Environment(
             loader=FileSystemLoader('templates')
             )
         return env.get_template(template)
 
+    def collect_css(self, location):
+        """Collect CSS files from location."""
+        css_files = glob(join(location, "*.css"))
+
+        return css_files
+
     def create_zine(self, filename=None):
+        """Build zine pdf from generators."""
+
         from generators import all_generators
 
         if not filename:
             filename = self.seed + ".pdf"
 
-        with TemporaryDirectory() as target:
+        with TemporaryDirectory(dir=".") as target:
+            cover = CoverGenerator("./delete", self.seed)
+
             all_instances = [generator(target, self.seed) for generator in all_generators]
 
-            source = self.template.render(cover="Testcover", generators=all_instances)
-            print(source)
-            HTML(string=source).write_pdf(filename)
+            source = self.template.render(cover=cover.generate(), generators=all_instances)
+            HTML(string=source, base_url=".").write_pdf(filename)
 
-        return "Done building file: " + filename
-
-
-"""
-def get_generators():
-    "Get a list of generators and return an instantiated list of them."
-    gens = []
-    for key, val in globals().copy().items():
-        if inspect.ismodule(val):
-            for x in dir(val):
-                print("Inspecting:", key)
-                item = getattr(val, x)
-                if inspect.isclass(item):
-                    if issubclass(item, default.ProcGen) and item is not default.ProcGen:
-                        try:
-                            gens.append(item())
-                            print("Added:", item)
-                        except Exception as e:
-                            print(e)
-
-    return gens
-
-"""
+        return filename
 
 if __name__ == "__main__":
     zinemaker = ProcGenZine()
